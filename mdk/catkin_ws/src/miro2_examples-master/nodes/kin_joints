@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+
+# Message types
+from sensor_msgs.msg import JointState
+
+# Other imports
+import os
+import math
+import time
+import rospy
+import numpy as np
+
+# Set robot name
+topic_root = "/" + os.getenv("MIRO_ROBOT_NAME")
+
+# Python needs to initialise a ROS node for publishing data
+rospy.init_node("py_pub", anonymous=True)
+
+# Define ROS publisher
+pub_kin = rospy.Publisher(topic_root + "/control/kinematic_joints", JointState, queue_size=0)
+
+# Create object to hold published data
+kin_joints = JointState()
+kin_joints.name = ["tilt", "lift", "yaw", "pitch"]
+kin_joints.position = [0.0, math.radians(34.0), 0.0, 0.0]
+
+# Generate fake enumerator for joint arrays
+tilt, lift, yaw, pitch = range(4)
+
+# I haven't checked if these random number generators outputs reasonable or valid angles
+# Minimum and maximum values are listed in mdk/share/python/miro2/constants.py
+lift_val = np.random.uniform(-1, 1, 1)
+pitch_val = np.random.uniform(-1, 1, 1)
+yaw_val = np.random.uniform(-1, 1, 1)
+
+# Set joint values
+kin_joints.position[lift] = math.radians(lift_val)
+kin_joints.position[pitch] = math.radians(pitch_val)
+kin_joints.position[yaw] = math.radians(yaw_val)
+
+# Publish kinematic joints for 1 second
+t_start = time.clock()
+
+while not rospy.core.is_shutdown():
+    pub_kin.publish(kin_joints)
+
+    if time.clock() >= t_start + 1:
+        break
+
+# Take a look at the client_gui.py code (mdk/bin/shared/client_gui.py) for a more detailed use of ROSPy

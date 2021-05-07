@@ -1,0 +1,2 @@
+miro2_msg
+-DCATKIN_DEVEL_PREFIX=/home/harix/mdk/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/harix/mdk/catkin_ws/install -G Unix Makefiles
